@@ -5,12 +5,14 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { ProductRoutingModule } from './product-routing.module';
 import { ListComponent } from './list/list.component';
 import { AddComponent } from './add/add.component';
-
+import { ViewComponent } from './view/view.component';
+//import { SharedModule } from '../shared/shared.module';
 
 @NgModule({
-  declarations: [ListComponent, AddComponent],
+  declarations: [ListComponent, AddComponent, ViewComponent],
   imports: [
     CommonModule,
+
     ProductRoutingModule,
     FormsModule,
     ReactiveFormsModule,

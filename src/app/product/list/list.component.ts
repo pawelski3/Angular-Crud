@@ -1,7 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { ProductService } from '../services/product.service';
 import { Observable } from 'rxjs';
-import { Product } from '../models/product';
+import { Product, IProduct } from '../models/product';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-list',
@@ -11,7 +12,9 @@ import { Product } from '../models/product';
 export class ListComponent implements OnInit {
 
   products: Observable<Product[]> = null;
-  constructor(private productservice: ProductService) { }
+  constructor(
+    private router: Router,
+    private productservice: ProductService) { }
 
 
 
@@ -20,9 +23,12 @@ export class ListComponent implements OnInit {
 
   }
 
-  deleteProduct(product):void{
+  deleteProduct(product): void {
     this.productservice.deleteProduct(product);
   }
 
+  viewProduct(product:IProduct):void{
+    this.router.navigate(['products/view/'+product.id]);
+  }
 
 }

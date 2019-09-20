@@ -33,7 +33,7 @@ export class ProductService {
 
   addNewProduct(product: IProduct): void {
     this.products.sort(item => item.id)
-    product.id = this.products.length + 1
+    product.id = this.products.length + 1;
     this.products.push(product);
   }
 

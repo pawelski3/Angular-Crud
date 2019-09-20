@@ -5,7 +5,9 @@ import { Lookup } from '../models/lookup';
 import { LookupService } from '../services/lookup.service';
 import { Product } from '../models/product';
 import { ProductService } from '../services/product.service';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute, ParamMap } from '@angular/router';
+import { switchMap } from 'rxjs/operators';
+import { isNullOrUndefined } from 'util';
 
 @Component({
   selector: 'app-add',
@@ -23,7 +25,8 @@ export class AddComponent implements OnInit {
   constructor(private fb: FormBuilder,
     private lookupservice: LookupService,
     private productService: ProductService,
-    private router: Router
+    private router: Router,
+    private route: ActivatedRoute
   ) { }
 
   ngOnInit() {
@@ -37,10 +40,34 @@ export class AddComponent implements OnInit {
 
     this.units = this.lookupservice.getUnits();
     this.categories = this.lookupservice.getProductCategories();
+
+    const product$ = this.route.paramMap.pipe(
+      switchMap((params: ParamMap) =>
+        this.productService.getProductById(Number.parseInt(params.get('id')))
+
+      )
+    );
+
+    product$.subscribe(product => {
+      if (!isNullOrUndefined(product)) {
+        console.log(product);
+        this.productForm.get('id').setValue(product.id);
+        this.productForm.get('name').setValue(product.name);
+        this.productForm.get('code').setValue(product.code);
+        this.productForm.get('category').setValue(product.category.code);
+        this.productForm.get('unit').setValue(product.unit.code);
+        this.productForm.get('salesRate').setValue(product.salesRate);
+        this.productForm.get('purchaseRate').setValue(product.purchaseRate);
+      }
+    });
   }
 
+
+
+
+
   save($event): void {
-    this.formSubmitted=true;
+    this.formSubmitted = true;
     if (!this.productForm.valid) {
       return;
     }
@@ -50,7 +77,7 @@ export class AddComponent implements OnInit {
   }
 
   saveAndContinue($event): void {
-    this.formSubmitted=true;
+    this.formSubmitted = true;
     if (!this.productForm.valid) {
       return;
     }
@@ -69,8 +96,14 @@ export class AddComponent implements OnInit {
     product.purchaseRate = this.productForm.get('purchaseRate').value;
     product.salesRate = this.productForm.get('salesRate').value;
 
-    this.productService.addNewProduct(product);
+    if (product.id == 0) {
+      this.productService.addNewProduct(product);
+    }
+    else {
+      this.productService.updateProduct(product);
+    }
   }
+
 
   getLookupObjFromCode(code: string): Lookup {
     var lookup: Lookup = null;
